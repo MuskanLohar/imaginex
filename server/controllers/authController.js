@@ -4,10 +4,10 @@ import User from "../models/userModel.js"
 
 const registerUser = async (req, res) => {
 
-    const { name, email, phone, password } = req.body
+    const { name, email, phone, password, bio } = req.body
 
     // Check if all fields are coming
-    if (!name || !email || !phone || !password) {
+    if (!name || !email || !phone || !password || !bio) {
         res.status(409)
         throw new Error('Please Fill All Details!')
     }
@@ -30,7 +30,7 @@ const registerUser = async (req, res) => {
 
 
     // Register User
-    let user = await User.create({ name, email, phone, password: hashedPassword })
+    let user = await User.create({ name, email, phone, password: hashedPassword , bio})
 
     if (!user) {
         res.status(400)
@@ -41,6 +41,7 @@ const registerUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        bio : user.bio,
         phone: user.phone,
         isAdmin: user.isAdmin,
         isActive: user.isActive,

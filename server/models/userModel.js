@@ -19,6 +19,27 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please Enter your Password"],
     },
+     avtar : {
+         type: String,
+       default : " ",
+    },
+
+    bio : {
+         type: String,
+        required: [true, "Please Enter your bio"],
+    },
+    followers :[
+        {
+            type : mongoose.Schema.Types.ObjectId,
+            ref : 'User'
+        }
+    ],
+    following :[
+        {
+            type : mongoose.Schema.Types.ObjectId,
+            ref : 'User'
+        }
+    ],
     isAdmin: {
         type : Boolean,
         default : false,
