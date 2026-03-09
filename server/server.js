@@ -7,6 +7,9 @@ import connectDB from "./config/dbConfig.js"
 import authRoutes from "./routes/authRoutes.js"
 import errorHandler from "./middleware/errorHandler.js"
 import followRoutes from "./routes/followRoutes.js"
+import profileRoutes from "./routes/profileRoutes.js"
+import adminRoutes from "./routes/adminRoutes.js"
+import postRoutes from "./routes/postRoutes.js"
 
 
 dotenv.config()
@@ -34,10 +37,19 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes)
 
 // follow Rotes
-app.use("/api/follow", followRoutes)
+app.use("/api/user", followRoutes)
+
+//profile Router
+app.use("/api/profile", profileRoutes )
+
+// Admin Routes
+app.use("/api/admin", adminRoutes)
 
 // Error Handler
 app.use(errorHandler)
+
+// post routes
+app.use("/api/post", postRoutes)
 
 
 app.listen(PORT, () => {
