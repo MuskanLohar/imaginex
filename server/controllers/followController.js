@@ -54,8 +54,6 @@ const unfollowUserRequest = async (req, res) => {
     }
 
 
-
-
     // remove follower
     let updatedFollowersList = targetUser.followers.filter(follower => follower.toString() !== currentUser._id.toString())
     targetUser.followers = updatedFollowersList

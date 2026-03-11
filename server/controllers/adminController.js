@@ -1,4 +1,6 @@
 import User from "../models/userModel.js"
+import Post from "../models/postModel.js"
+import Report from "../models/reportModel.js"
 
 const getAllUsers = async (req, res) => {
   
@@ -13,16 +15,46 @@ const getAllUsers = async (req, res) => {
 }
 
 const getAllPosts = async(req, res) => {
-    res.send("All Posts")
+  const posts = await User.find()
+
+    if(!posts){
+        res.status(404)
+        throw new Error("posts not found!")
+    }
+
+    res.status(200).json(posts)
 }
 
 
 const updatePost = async (req, res) => {
-    res.send("Post Updated!")
+    let postId = req.params.pid
+
+    const post = await Post.findById(postId)
+
+    if(!post){
+        res.status(404)
+        throw new Error("post not found")
+    }
+
+    let updatedPost = await Post.findByIdAndUpdate(postId, req.body, { new: true})
+
+  if(!updatePost){
+        res.status(409)
+        throw new Error("post not updated!")
+    }
+
+    res.status(200).json(updatedPost)
 }
 
 const getReports = async(req, res) => {
-     res.send("Get Reports!")
+     const reports = await Report.find()
+
+    if(!reports){
+        res.status(404)
+        throw new Error("reports not found!")
+    }
+
+    res.status(200).json(reports)
 }
 
 const UpdateUser = async(req, res) => {

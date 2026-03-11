@@ -10,6 +10,7 @@ import followRoutes from "./routes/followRoutes.js"
 import profileRoutes from "./routes/profileRoutes.js"
 import adminRoutes from "./routes/adminRoutes.js"
 import postRoutes from "./routes/postRoutes.js"
+import  savePostsRoutes from "./routes/savedPostRoutes.js"
 
 
 dotenv.config()
@@ -49,7 +50,11 @@ app.use("/api/admin", adminRoutes)
 app.use(errorHandler)
 
 // post routes
-app.use("/api/post", postRoutes)
+app.use("/api/posts", postRoutes)
+
+
+// saved posts
+app.use("/api/saved-posts" , savePostsRoutes)
 
 
 app.listen(PORT, () => {
