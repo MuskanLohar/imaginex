@@ -5,7 +5,9 @@ import protect from "../middleware/authMiddleware.js"
 
 const router = express.Router()
 
-router.get("/followers", protect.forUser , profileController.getMyFollowers )
+
+router.get("/followers", profileController.getMyFollowers )
 router.get("/followings", protect.forUser , profileController.getMyFollowing )
+router.get("/:name", profileController.getProfile )
 
 export default router

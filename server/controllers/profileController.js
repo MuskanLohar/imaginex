@@ -1,4 +1,5 @@
 import User from "../models/userModel.js"
+import Post from "../models/postModel.js"
 
 const  getMyFollowers = async(req, res) => {
 
@@ -13,6 +14,37 @@ const  getMyFollowers = async(req, res) => {
    
 }
 
+
+const  getProfile = async(req, res) => {
+
+    const {name} = req.params
+
+    console.log(name)
+
+    const user = await User.findOne({name: name}).populate('followers').populate('following')
+    const posts = await Post.find({user : user._id})
+    if(!user || !posts){
+        res.status(404)
+        throw new Error("user Not Found!, post not found")
+    }
+
+    const profile = {
+        _id : user._id,
+        name : user.name,
+        email : user.email,
+        bio : user.bio,
+        followers : user.followers,
+        following : user.following,
+        credits : user.credits,
+        posts : posts,
+        createdAt : user.createdAt
+    }
+     
+    res.status(200).json(profile)
+   
+}
+
+
 const  getMyFollowing = async(req, res) => {
    const user = await User.findById(req.user.id).populate("following")
 
@@ -25,6 +57,6 @@ const  getMyFollowing = async(req, res) => {
 }
 
 
-const profileController = { getMyFollowers, getMyFollowing }
+const profileController = { getMyFollowers, getMyFollowing, getProfile }
 
 export default profileController

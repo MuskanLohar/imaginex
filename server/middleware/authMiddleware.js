@@ -3,6 +3,8 @@ import User from "../models/userModel.js"
 
 
 const forUser = async (req, res, next) => {
+
+ 
    try {
      let token
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){

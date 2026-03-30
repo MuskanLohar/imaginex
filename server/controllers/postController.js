@@ -21,12 +21,27 @@ const generateAndPost = async (req, res) => {
     let userId = req.user.id
     let newPost
 
+    // check if user exists
+    const user = await User.findById(userId)
+
+    if(!user){
+        res.status(404)
+        throw new Error("User Not Found!")
+
+    }
+
+    //check if user have enough credits
+    if(user.credits < 1){
+        res.status(409)
+        throw new Error("Not Enough Credits!")
+    }
+
     try {
         // Get Prompt
-        const { prompt, caption } = req.body
+        const { prompt } = req.body
 
         // check if prompt is coming in body
-        if (!prompt || !caption) {
+        if (!prompt) {
             res.status(409)
             throw new Error("Kindly Provide Prompt To Generate image!")
         }
@@ -70,7 +85,7 @@ const generateAndPost = async (req, res) => {
                 newPost = new Post({
                     user: userId,
                     imageLink: imageLink.secure_url,
-                    caption: caption
+                    prompt: prompt
                 })
 
                 // save post to db
@@ -79,6 +94,9 @@ const generateAndPost = async (req, res) => {
                 await newPost.populate("user")
             }
         }
+
+        //updated credits
+        await User.findByIdAndUpdate(user._id, {credits : user.credits - 1}, {new: true})
 
         res.status(201).json(newPost)
 
@@ -148,7 +166,7 @@ const likeAndUnlikePost = async (req, res) => {
     }
 
     // populate after save using the post model directly
-    await Post.populate(post, { path: 'likes' })
+    // await Post.populate(post, { path: 'likes' })
 
     res.status(200).json(post)
 
@@ -183,6 +201,7 @@ const reportPost = async(req, res) => {
 
     res.status(201).json(newReport)
 }
+
 
 
 

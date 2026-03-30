@@ -6,6 +6,7 @@ const followUserRequest = async (req, res) => {
     let targetUser = await User.findById(req.params.uid)
     let currentUser = await User.findById(req.user._id)
 
+  
 
     // chack if both user exists
     if (!targetUser || !currentUser) {
