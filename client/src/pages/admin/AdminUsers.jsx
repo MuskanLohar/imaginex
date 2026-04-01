@@ -1,13 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, Users } from 'lucide-react';
 import UserAvatar from '../../components/UserAvatar';
 import AdminSidebar from '../../components/admin/AdminSidebar';
+import { useDispatch, useSelector } from 'react-redux';
+import Loader from '../../components/Loader';
+import { toast } from 'react-toastify';
+import { banUnBanUser, getAllUsers } from '../../features/admin/adminSlice';
 
 const AdminUsers = () => {
-  const [users, setUsers] = useState([]);
-  const [filter, setFilter] = useState('All');
 
-  const filterOptions = ['All', 'Active', 'Banned'];
+  const { users, adminLoading, adminSuccess, adminError, adminErrorMessage } = useSelector(state => state.admin)
+
+  const dispatch = useDispatch()
+
+  const handleBanUnbanUser = (uid) => {
+    dispatch(banUnBanUser(uid))
+  }
+
+
+
+
+  useEffect(() => {
+
+    if (!adminError) {
+      // Fetch All Users
+      dispatch(getAllUsers())
+    }
+
+    if (adminError && adminErrorMessage) {
+      toast.error(adminErrorMessage, { position: "top-center" })
+    }
+
+
+  }, [adminError, adminErrorMessage])
+
+  if (adminLoading) {
+    return (
+      <Loader />
+    )
+  }
+
+
+
 
   return (
 
@@ -37,20 +71,6 @@ const AdminUsers = () => {
             </div>
 
             {/* Filters */}
-            <div className="flex items-center gap-2">
-              {filterOptions.map((opt) => (
-                <button
-                  key={opt}
-                  onClick={() => setFilter(opt)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${filter === opt
-                      ? 'bg-violet-500 text-white'
-                      : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                    }`}
-                >
-                  {opt}
-                </button>
-              ))}
-            </div>
 
             {/* Table */}
             <div className="glass-card overflow-hidden">
@@ -95,11 +115,11 @@ const AdminUsers = () => {
                           </td>
                           <td className="py-4 px-4 text-right">
                             {u.isActive ? (
-                              <button className="border border-rose-500/50 text-rose-400 hover:bg-rose-500/10 px-3 py-1 rounded-full text-xs font-medium transition-colors">
+                              <button onClick={() => handleBanUnbanUser(u._id)} className="border border-rose-500/50 text-rose-400 hover:bg-rose-500/10 px-3 py-1 rounded-full text-xs font-medium transition-colors">
                                 Ban
                               </button>
                             ) : (
-                              <button className="border border-green-500/50 text-green-400 hover:bg-green-500/10 px-3 py-1 rounded-full text-xs font-medium transition-colors">
+                              <button onClick={() => handleBanUnbanUser(u._id)} className="border border-green-500/50 text-green-400 hover:bg-green-500/10 px-3 py-1 rounded-full text-xs font-medium transition-colors">
                                 Unban
                               </button>
                             )}

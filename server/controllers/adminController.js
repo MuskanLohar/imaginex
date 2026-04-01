@@ -3,82 +3,84 @@ import Post from "../models/postModel.js"
 import Report from "../models/reportModel.js"
 
 const getAllUsers = async (req, res) => {
-  
+
     const users = await User.find()
 
-    if(!users){
+    if (!users) {
         res.status(404)
-        throw new Error("users not found!")
+        throw new Error("Users Not Found!")
     }
 
     res.status(200).json(users)
+
 }
 
-const getAllPosts = async(req, res) => {
-  const posts = await User.find()
+const getAllPosts = async (req, res) => {
+    const posts = await Post.find()
 
-    if(!posts){
+    if (!posts) {
         res.status(404)
-        throw new Error("posts not found!")
+        throw new Error("Posts Not Found!")
     }
 
     res.status(200).json(posts)
-}
 
+
+}
 
 const updatePost = async (req, res) => {
     let postId = req.params.pid
 
     const post = await Post.findById(postId)
 
-    if(!post){
+    if (!post) {
         res.status(404)
-        throw new Error("post not found")
+        throw new Error('Post Not Found!')
     }
 
-    let updatedPost = await Post.findByIdAndUpdate(postId, req.body, { new: true})
+    let updatedPost = await Post.findByIdAndUpdate(postId, { isPublished: post.isPublished ? false : true }, { new: true })
 
-  if(!updatePost){
+    if (!updatedPost) {
         res.status(409)
-        throw new Error("post not updated!")
+        throw new Error('Post Not Updated!')
     }
 
     res.status(200).json(updatedPost)
 }
 
-const getReports = async(req, res) => {
-     const reports = await Report.find()
+const getReports = async (req, res) => {
+    const reports = await Report.find().populate('user').populate('post')
 
-    if(!reports){
+    if (!reports) {
         res.status(404)
-        throw new Error("reports not found!")
+        throw new Error("Reports Not Found!")
     }
 
     res.status(200).json(reports)
 }
 
-const UpdateUser = async(req, res) => {
+const updateUser = async (req, res) => {
 
     let userId = req.params.uid
 
     const user = await User.findById(userId)
 
-    if(!user){
+    if (!user) {
         res.status(404)
-        throw new Error("user not found")
+        throw new Error('User Not Found!')
     }
 
-    let updatedUser = await User.findByIdAndUpdate(userId, {isActive : user.isActive ? false : true}, { new: true })
+    let updatedUser = await User.findByIdAndUpdate(userId, { isActive: user.isActive ? false : true }, { new: true })
 
-  if(!updatedUser){
+    if (!updateUser) {
         res.status(409)
-        throw new Error("user not updated!np")
+        throw new Error('User Not Updated!')
     }
+
     res.status(200).json(updatedUser)
 }
 
 
-
-const adminController = {getAllPosts, getAllUsers, updatePost, UpdateUser, getReports}
+const adminController = { getAllPosts, getAllUsers, getReports, updatePost, updateUser }
 
 export default adminController

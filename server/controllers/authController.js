@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken"
 import User from "../models/userModel.js"
 
 const registerUser = async (req, res) => {
@@ -12,9 +12,9 @@ const registerUser = async (req, res) => {
         throw new Error('Please Fill All Details!')
     }
 
-    // Check if user already exists
+    // Check if user already exists 
     let userNameExist = await User.findOne({ name: name })
-     let emailExist = await User.findOne({ email: email })
+    let emailExist = await User.findOne({ email: email })
     let phoneExist = await User.findOne({ phone: phone })
 
     if (userNameExist || emailExist || phoneExist) {
@@ -23,15 +23,12 @@ const registerUser = async (req, res) => {
     }
 
 
-    // Hash password
+    // Hash Password
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
 
-
-
-
     // Register User
-    let user = await User.create({ name, email, phone, password: hashedPassword , bio})
+    let user = await User.create({ name, email, phone, password: hashedPassword, bio })
 
     if (!user) {
         res.status(400)
@@ -41,16 +38,19 @@ const registerUser = async (req, res) => {
     res.status(201).json({
         id: user._id,
         name: user.name,
+        bio: user.bio,
         email: user.email,
-        bio : user.bio,
         phone: user.phone,
         isAdmin: user.isAdmin,
         isActive: user.isActive,
+        createdAt: user.createdAt,
         credits: user.credits,
-        createdAt : user.createdAt,
         token: generateToken(user._id)
     })
+
+
 }
+
 
 const loginUser = async (req, res) => {
     const { email, password } = req.body
@@ -61,36 +61,41 @@ const loginUser = async (req, res) => {
         throw new Error('Please Fill All Details!')
     }
 
-    // Check if user exists
+    // Check if user  exists 
     let user = await User.findOne({ email: email })
+
+    // Check if users is not banned
+    if (!user.isActive) {
+        res.status(401)
+        throw new Error("You Are Banned! Contact Admin!")
+    }
+
 
     if (user && await bcrypt.compare(password, user.password)) {
         res.status(200).json({
             id: user._id,
             name: user.name,
             email: user.email,
-            bio : user.bio,
+            bio: user.bio,
             phone: user.phone,
             isAdmin: user.isAdmin,
             isActive: user.isActive,
             credits: user.credits,
-              createdAt : user.createdAt,
+            createdAt: user.createdAt,
             token: generateToken(user._id)
         })
     } else {
         res.status(400)
-        throw new Error("inavlid credentials!")
+        throw new Error("Invalid Credentials!")
     }
+
 
 }
 
 
-// protected Controller
+// Protected Controller
 const privateController = (req, res) => {
-
-    console.log(req.user)
-
-     res.send("i am private controller " + req.user.name)
+    res.send("I am Private Controller " + req.user.name)
 }
 
 
@@ -98,9 +103,11 @@ const privateController = (req, res) => {
 
 // Generate Token
 const generateToken = (id) => {
-
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' })
 }
+
+
+
 
 const authController = { registerUser, loginUser, privateController }
 

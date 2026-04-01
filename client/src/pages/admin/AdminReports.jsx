@@ -1,9 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Flag, Image as ImageIcon } from 'lucide-react';
 import AdminSidebar from '../../components/admin/AdminSidebar';
+import Loader from '../../components/Loader';
+import { toast } from 'react-toastify';
+import { getAllReports } from '../../features/admin/adminSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const AdminReports = () => {
-  const [reports, setReports] = useState([]);
+  const { reports, adminLoading, adminSuccess, adminError, adminErrorMessage } = useSelector(state => state.admin)
+
+  const dispatch = useDispatch()
+
+
+
+  useEffect(() => {
+
+    if (!adminError) {
+      // Fetch All Reports
+      dispatch(getAllReports())
+    }
+
+    if (adminError && adminErrorMessage) {
+      toast.error(adminErrorMessage, { position: "top-center" })
+    }
+
+
+  }, [adminError, adminErrorMessage])
+
+  if (adminLoading) {
+    return (
+      <Loader />
+    )
+  }
+
 
   return (
     <>

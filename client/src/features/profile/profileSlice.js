@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import profileService from './profileService.js';
+import profileService from './profileService';
 
 let profileExists = JSON.parse(localStorage.getItem('profile'))
 

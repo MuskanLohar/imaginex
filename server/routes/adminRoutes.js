@@ -7,7 +7,7 @@ const router = express.Router()
 router.get("/users", protect.forAdmin,  adminController.getAllUsers)
 router.get("/posts", protect.forAdmin, adminController.getAllPosts)
 router.get("/reports", protect.forAdmin, adminController.getReports)
-router.put("/user/:uid", protect.forAdmin, adminController.UpdateUser)
+router.put("/user/:uid", protect.forAdmin, adminController.updateUser)
 router.put("/post/:pid", protect.forAdmin, adminController.updatePost)
 
 

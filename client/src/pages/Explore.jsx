@@ -16,6 +16,9 @@ const Explore = () => {
   const dispatch = useDispatch()
 
 
+  const activePosts = posts.filter(post => post.isPublished)
+
+
   useEffect(() => {
     dispatch(getPosts())
   }, [])
@@ -40,7 +43,7 @@ const Explore = () => {
 
             {posts.length > 0 ? (
               <MasonryGrid>
-                {posts.map(post => (
+                {activePosts.map(post => (
                   <PostCard key={post._id} post={post} />
                 ))}
               </MasonryGrid>

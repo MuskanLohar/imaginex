@@ -1,17 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, Image as ImageIcon, Flag, UserCheck, Eye } from 'lucide-react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import UserAvatar from '../../components/UserAvatar';
 import AdminSidebar from '../../components/admin/AdminSidebar';
+import Loader from "../../components/Loader"
+import { getAllPosts, getAllReports, getAllUsers } from '../../features/admin/adminSlice';
+import { toast } from "react-toastify"
 
 const AdminDashboard = () => {
   const { user } = useSelector(state => state.auth);
+  const { users, posts, reports, adminLoading, adminSuccess, adminError, adminErrorMessage } = useSelector(state => state.admin)
+
+  const dispatch = useDispatch()
+
+
+
 
   // Placeholders for data
-  const [users, setUsers] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [reports, setReports] = useState([]);
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalPosts: 0,
@@ -20,11 +26,36 @@ const AdminDashboard = () => {
   });
 
   const statCards = [
-    { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'text-violet-500', border: 'border-b-violet-500/50' },
-    { label: 'Total Posts', value: stats.totalPosts, icon: ImageIcon, color: 'text-fuchsia-500', border: 'border-b-fuchsia-500/50' },
-    { label: 'Total Reports', value: stats.totalReports, icon: Flag, color: 'text-rose-500', border: 'border-b-rose-500/50' },
-    { label: 'Active Users', value: stats.activeUsers, icon: UserCheck, color: 'text-green-500', border: 'border-b-green-500/50' },
+    { label: 'Total Users', value: users?.length, icon: Users, color: 'text-violet-500', border: 'border-b-violet-500/50' },
+    { label: 'Total Posts', value: posts?.length, icon: ImageIcon, color: 'text-fuchsia-500', border: 'border-b-fuchsia-500/50' },
+    { label: 'Total Reports', value: reports?.length, icon: Flag, color: 'text-rose-500', border: 'border-b-rose-500/50' },
+    { label: 'Active Users', value: users?.filter(user => user.isActive).length, icon: UserCheck, color: 'text-green-500', border: 'border-b-green-500/50' },
   ];
+
+
+  useEffect(() => {
+
+    if (!adminError) {
+      // Fetch All Users
+      dispatch(getAllUsers())
+      // Fetch All Posts
+      dispatch(getAllPosts())
+      // Fetch All Reports
+      dispatch(getAllReports())
+    }
+
+    if (adminError && adminErrorMessage) {
+      toast.error(adminErrorMessage, { position: "top-center" })
+    }
+
+
+  }, [adminError, adminErrorMessage])
+
+  if (adminLoading) {
+    return (
+      <Loader />
+    )
+  }
 
   return (
 
@@ -119,8 +150,12 @@ const AdminDashboard = () => {
                       <div key={report._id} className="glass-card p-4 hover:bg-white/5 transition-colors">
                         <p className="text-white text-sm font-medium line-clamp-2 mb-1">"{report.text}"</p>
                         <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
-                          <span>By @{report.user?.name}</span>
-                          <span>Post ID: {report.post?._id?.slice(-6) || 'N/A'}</span>
+                          <span>
+                            <span>By @{report.user?.name}</span>
+
+                            <span className='block'>Post ID: {report.post?._id?.slice(-6) || 'N/A'}</span>
+                          </span>
+                          <Link className='p-2 bg-violet-300 rounded-md text-black' to={`/auth/post/${report.post?._id}`}>View Post</Link>
                         </div>
                       </div>
                     ))

@@ -25,7 +25,7 @@ const Feed = () => {
     profile?.following?.some(follow =>
       follow._id === post.user._id
     )
-  );
+  ).filter(post => post.isPublished)
 
 
 
@@ -33,7 +33,7 @@ const Feed = () => {
 
   useEffect(() => {
 
-    if (user?.isAdmin) {
+    if (user.isAdmin) {
       navigate("/admin/dashboard")
     }
 

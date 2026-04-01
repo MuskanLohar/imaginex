@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Image as ImageIcon, Flag, Sparkles, LogOut, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Users, Image as ImageIcon, Flag, Sparkles, LogOut, ShieldCheck, Compass } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../features/auth/authSlice';
 
@@ -14,6 +14,7 @@ const AdminSidebar = () => {
     { icon: Users, label: 'Users', path: '/admin/users' },
     { icon: ImageIcon, label: 'Posts', path: '/admin/posts' },
     { icon: Flag, label: 'Reports', path: '/admin/reports' },
+    { icon: Compass, label: 'Explore', path: '/auth/explore' },
   ];
 
   const handleLogout = () => {

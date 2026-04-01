@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { Home, Compass, PlusSquare, User, Sparkles, Settings, LogOut } from 'lucide-react';
+import { Home, Compass, PlusSquare, User, Sparkles, Settings, LogOut, LayoutDashboard } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../features/auth/authSlice';
 import { resetProfile } from '../features/profile/profileSlice';
@@ -13,7 +13,7 @@ const Sidebar = () => {
   const navigate = useNavigate()
 
   const navItems = [
-    { icon: Home, label: 'Feed', path: '/auth/feed' },
+    { icon: user.isAdmin ? LayoutDashboard : Home, label: user.isAdmin ? "Dashboard" : 'Feed', path: user.isAdmin ? "/admin/dashboard" : '/auth/feed' },
     { icon: Compass, label: 'Explore', path: '/auth/explore' },
     { icon: PlusSquare, label: 'Generate', path: '/auth/generate' },
     { icon: User, label: 'Profile', path: `/auth/profile/${user?.name}` },
@@ -60,10 +60,6 @@ const Sidebar = () => {
         </nav>
 
         <div className="p-4 mb-4 mt-auto">
-          <div className="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white cursor-pointer transition-all">
-            <Settings className="w-5 h-5" />
-            <span>Settings</span>
-          </div>
           <button onClick={handleLogout} className="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-red-400 cursor-pointer transition-all mt-1">
             <LogOut className="w-5 h-5" />
             <span>Log out</span>

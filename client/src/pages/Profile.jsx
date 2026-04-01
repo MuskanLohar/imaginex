@@ -15,8 +15,6 @@ import Sidebar from '../components/Sidebar';
 
 const Profile = () => {
 
-
-
   const { profile, profileSuccess, profileLoading, profileError, profileErrorMessage } = useSelector(state => state.profile)
   const { user } = useSelector(state => state.auth)
 
@@ -25,6 +23,7 @@ const Profile = () => {
   const dispatch = useDispatch()
   const { username } = useParams();
 
+  console.log(username)
 
   const handleFollowUnfollow = (id) => {
 
@@ -37,7 +36,7 @@ const Profile = () => {
     }
 
     // Reload The Page
-    window.location.href = "/profile/" + username
+    window.location.href = "/auth/profile/" + username
   }
 
 
@@ -91,9 +90,9 @@ const Profile = () => {
                 </div>
 
                 <div className="flex gap-3 relative z-10 sm:mb-2">
-                  <button className="p-2 rounded-full glass-card hover:bg-white/10 transition-colors">
+                  {/* <button className="p-2 rounded-full glass-card hover:bg-white/10 transition-colors">
                     <Share2 className="w-5 h-5 text-gray-300" />
-                  </button>
+                  </button> */}
                   <button onClick={() => handleFollowUnfollow(profile._id)} className={alreadyFollowed ? "px-5 py-2 rounded-full text-white font-medium hover:bg-white/20 transition-colors text-sm bg-red-500" : "px-5 py-2 rounded-full bg-white/10 text-white font-medium hover:bg-white/20 transition-colors text-sm"}>
                     {alreadyFollowed ? "Unfollow" : "Follow"}
                   </button>
@@ -130,17 +129,17 @@ const Profile = () => {
                 <button className="pb-4 font-medium text-violet-400 border-b-2 border-violet-500 relative">
                   Creations
                 </button>
-                <button className="pb-4 font-medium text-gray-400 hover:text-white transition-colors">
+                {/* <button className="pb-4 font-medium text-gray-400 hover:text-white transition-colors">
                   Liked
                 </button>
                 <button className="pb-4 font-medium text-gray-400 hover:text-white transition-colors">
                   Collections
-                </button>
+                </button> */}
               </div>
 
               {/* Posts Grid */}
               <MasonryGrid>
-                {profile?.posts?.map(post => (
+                {profile?.posts.map(post => (
                   <PostCard key={post.id} post={post} />
                 ))}
               </MasonryGrid>

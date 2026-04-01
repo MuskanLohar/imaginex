@@ -130,15 +130,14 @@ const App = () => {
           <Route path="/register" element={<Register />} />
 
 
-          <Route path="/profile/:uid" element={<Profile />} />
-
           {/* Auth Routes */}
           <Route path='/auth' element={<PrivateComponent />}>
             <Route path='feed' element={<Feed />} />
+            <Route path='post/:pid' element={<PostDetail />} />
             <Route path='explore' element={<Explore />} />
             <Route path='generate' element={<Generate />} />
-            <Route path='profile/:uid' element={<Profile />} />
-            <Route path='post/:id' element={<PostDetail />} />
+            <Route path='profile/:username' element={<Profile />} />
+            {/* <Route path='post/:id' element={<PostDetail />} /> */}
           </Route>
 
 

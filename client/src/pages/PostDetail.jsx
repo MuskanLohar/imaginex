@@ -1,24 +1,30 @@
-import React, { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import UserAvatar from '../components/UserAvatar';
 import LikeButton from '../components/LikeButton';
 import { Share2, Bookmark, MoreHorizontal, ArrowLeft, Wand2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPost } from '../features/post/postSlice';
+import { getPost, reportPost } from '../features/post/postSlice';
 import Loader from '../components/Loader';
 import { follow } from '../features/profile/profileSlice';
+import { toast } from 'react-toastify';
 
 const PostDetail = () => {
+
+  const [modal, setModal] = useState(false)
+  const [text, setText] = useState("")
+
+
   const { post, postLoading, postSucess, postError, postErrorMessage } = useSelector(state => state.post)
 
   const { profile, profileLoading, profileSuccess, profileError, profileErrorMessage } = useSelector(state => state.profile)
 
-  const { id } = useParams();
+  const { pid } = useParams();
   const dispatch = useDispatch()
 
   let alreadyFollowed = profile.following.some(follow => follow?._id === post?.user?._id)
 
-
+  const navigate = useNavigate()
 
 
   const followUser = (id) => {
@@ -26,16 +32,36 @@ const PostDetail = () => {
   }
 
 
+  const handleModal = () => {
+    setModal(modal ? false : true)
+  }
+
+  // Report Post
+  const handleReportPost = (e) => {
+    e.preventDefault()
+    dispatch(reportPost({ text, pid }))
+    setModal(false)
+  }
+
 
   useEffect(() => {
 
-    // Fetch post details
-    dispatch(getPost(id))
+    if (!profileError && !postError) {
+      // Fetch post details
+      dispatch(getPost(pid))
+    }
 
-  }, [id])
+
+    if (postError && postErrorMessage || profileError && profileErrorMessage) {
+      toast.error(postErrorMessage || profileErrorMessage)
+      navigate("/login")
+    }
 
 
-  if (postLoading || !post) {
+  }, [pid, postError, postErrorMessage, profileError, profileErrorMessage])
+
+
+  if (postLoading || !post || profileLoading) {
     return (
       <Loader />
     )
@@ -44,7 +70,6 @@ const PostDetail = () => {
 
   return (
     <div className="h-full flex flex-col md:flex-row max-w-[1600px] mx-auto overflow-hidden">
-
       {/* Scrollable Image Area */}
       <div className="flex-1 overflow-y-auto bg-black/50 p-4 md:p-8 flex flex-col items-center justify-start min-h-0 relative hide-scrollbar">
         <Link to={-1} className="absolute top-4 left-4 md:top-8 md:left-8 w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-white/10 transition-colors z-10 group">
@@ -64,17 +89,31 @@ const PostDetail = () => {
         <div className="p-6 md:p-8 flex flex-col gap-8 h-full">
 
           {/* Header Actions */}
-          <div className="flex items-center justify-between">
+          <div className="relative flex items-center justify-between">
+
+            {/* Report Modal */}
+
+            {
+              modal && (
+                <div className="p-8 h-52 md:w-80 w-100 bg-gray-900 rounded-lg absolute top-12 right-5 z-50">
+                  <form onSubmit={handleReportPost}>
+                    <textarea value={text} onChange={(e) => setText(e.target.value)} className='border p-4 border-white rounded-xl w-full' name="" id="" placeholder='Enter Your Issue Here..'></textarea>
+                    <button type='submit' className="mt-4 w-full cursor-pointer py-2 rounded-xl flex items-center justify-center gap-2 font-bold transition-all duration-300 bg-white/5 border border-violet-500/30 text-violet-300 hover:bg-violet-600/20">Report This Post</button>
+                  </form>
+                </div>
+              )
+            }
+
             <div className="flex gap-3">
-              <button className="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-white/10 transition-colors">
+              {/* <button className="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-white/10 transition-colors">
                 <Share2 className="w-4 h-4 text-gray-300" />
-              </button>
+              </button> */}
               <button className="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-white/10 transition-colors">
                 <Bookmark className="w-4 h-4 text-gray-300" />
               </button>
             </div>
             <div className="flex items-center gap-3">
-              <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors">
+              <button onClick={handleModal} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors">
                 <MoreHorizontal className="w-5 h-5 text-gray-500" />
               </button>
               <LikeButton initialLikes={post.likes.length} post={post} />
@@ -85,7 +124,7 @@ const PostDetail = () => {
 
           {/* User Info */}
           <div className="flex items-center justify-between">
-            <Link to={`/profile/${post.user.name}`} className="flex items-center gap-3 group">
+            <Link to={`/auth/profile/${post?.user?.name}`} className="flex items-center gap-3 group">
               <UserAvatar src={post.user.avatar} alt={post.user.name} />
               <div>
                 <p className="font-bold text-white group-hover:text-violet-400 transition-colors">{post.user.name}</p>
@@ -117,7 +156,7 @@ const PostDetail = () => {
 
           {/* Metadata */}
           <div className="mt-auto pt-6 text-xs text-gray-500 flex justify-between items-center">
-            <span>Model: Imagine v5</span>
+            <span>Model: Nano Banana Pro</span>
             <span>Seed: {Math.floor(Math.random() * 999999999)}</span>
           </div>
 
